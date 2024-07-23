@@ -1,0 +1,47 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>documentprocessing_playground.syncfusion</RootNamespace>
+    <UserSecretsId>10a87cd8-bcf5-47a9-8ce0-bbff64724873</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="*" />
+	<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="*" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Scripting" Version="*" />
+	<PackageReference Include="Syncfusion.DocIO.Net.Core" Version="*" />
+	<PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="*" />
+	<PackageReference Include="Syncfusion.HtmlToPdfConverter.Net.Linux" Version="*" />
+	<PackageReference Include="Syncfusion.Pdf.Imaging.Net.Core" Version="*" />    
+	<PackageReference Include="Syncfusion.Pdf.Net.Core" Version="*" />    
+	<PackageReference Include="Syncfusion.Presentation.Net.Core" Version="*" />    
+	<PackageReference Include="Syncfusion.PresentationRenderer.Net.Core" Version="*" />    
+	<PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="*" />    
+	<PackageReference Include="Syncfusion.XlsIORenderer.Net.Core" Version="*" />  
+	<PackageReference Include="Skiasharp.NativeAssets.Linux" Version="*" />  
+    <PackageReference Include="System.Runtime.Loader" Version="*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\Syncfusion.NETCore\bin\" />
+    <Folder Include="wwwroot\Syncfusion.NETCore\obj\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\Syncfusion.NETCore\Syncfusion.NETCore.csproj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="wwwroot\Syncfusion.NETCore\Program.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>

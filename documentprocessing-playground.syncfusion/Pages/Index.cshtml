@@ -1,0 +1,466 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Syncfusion Playground";
+    var postResult = ViewData["PostResult"]?.ToString();
+    var postGuidResult = ViewData["PostGuidResult"]?.ToString();
+}
+@section Scripts {
+    <script>
+        // Function to show loading symbol
+        function showLoading() {
+            $('#loading').show();
+        }
+
+        // Function to hide loading symbol
+        function hideLoading() {
+            $('#loading').hide();
+        }
+        $(document).on('click', '.close', function () {
+            $(this).parent('.note-item').remove();
+        });
+
+
+        // Function to fetch content from GitHub raw URL and load into Monaco Editor
+        function initEditor(data, guidText) {
+            var githubRawUrl = data;
+            var edit = false;
+            //console.log("initEditor called with data:", data);
+            //console.log("initEditor called with data:", guidText);
+            if (!githubRawUrl) {
+                require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+                require(['vs/editor/editor.main'], function () {
+
+                    var editor = monaco.editor.create(document.getElementById('editor'), {
+                        value: [
+                            'using System;',
+                            'namespace HelloWorld',
+                            '{',
+                            '   public class Program',
+                            '   {',
+                            '       public static void Main()',
+                            '       {',
+                            '            Console.WriteLine("Hello, World!");',
+                            '       }',
+                            '   }',
+                            '}'
+                        ].join('\n'),
+                        language: 'csharp',
+                        formatOnPaste: true,
+                        formatOnType: true,
+                        fontSize: 14,
+                        automaticLayout: true,
+
+                        minimap: {
+                            enabled: false // Disable the minimap
+                        }
+                    });
+
+                    // Add event listener for changes
+                    editor.onDidChangeModelContent(function (event) {
+                        var value = editor.getValue();
+                        edit = true;
+                        
+                    });
+
+                    // Function to handle run button click
+                    window.runCode = function () {
+                        const startTime = performance.now();
+                        // Show loading symbol
+                        showLoading();
+                        var code = editor.getValue();
+                        var controller = new AbortController();
+                        var timeoutId = setTimeout(function () {
+                            controller.abort();
+                        }, 120000); // Set timeout to 2 minutes
+
+                        // Display the output in the terminal console
+                        var consoleOutput = document.getElementById('console-output');
+                        consoleOutput.innerHTML = "<div></div>";
+                        // Send the compiler and code to the backend for compilation or execution
+                        fetch('/Home/RunCode', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ code: code, githubRawUrl: githubRawUrl, guidText: guidText }),
+                            signal: controller.signal
+                        })
+                            .then(response => {
+                                clearTimeout(timeoutId);
+                                if (!response.ok) {
+                                    throw new Error('Failed to send data to backend');
+                                }
+                                return response.json(); // Extract response body as text
+                                // Handle success if needed
+                            })
+                            .then(data => {
+                                // Hide loading symbol
+                                hideLoading();
+                                edit = false;
+                                const endTime = performance.now();
+                                const timeTaken = endTime - startTime;
+                                alert(`Time taken: ${timeTaken.toFixed(2)} ms`);
+                                console.log('Success:', data); // Log success response to console
+
+                                if (data[0].output === "Completed") {
+                                    consoleOutput.innerHTML = "<p>You can download the resultant file from the link below,</p>";
+                                    for (var i = 0; i < data.length; i++) {
+                                        if (data[i].fileName === "") {
+                                            var val = data[i].output;
+                                            if (val.includes("\r\n")) {
+                                                val = val.replaceAll("\r\n", "</br>");
+                                            }
+                                            if (val.includes("\n")) {
+                                                val = val.replaceAll("\n", "</br>");
+                                            }
+                                            //console.log(val);
+                                            consoleOutput.innerHTML = consoleOutput.innerHTML + "</br> <div>" + val + "</div>";
+                                        } else {
+                                            // Create an <a> tag
+                                            var link = document.createElement('a');
+                                            link.href = data[i].fileBase64; // Set the href attribute based on the response
+                                            link.textContent = data[i].fileName; // Set the link text
+                                            link.download = data[i].fileName;
+                                            consoleOutput.appendChild(link);
+                                            consoleOutput.innerHTML = consoleOutput.innerHTML + "</br>";
+                                        }
+                                    }
+
+                                } else {
+                                    var val = data[0].output;
+                                    if (val.includes("\r\n")) {
+                                        val = val.replaceAll("\r\n", "</br>");
+                                    }
+                                    if (val.includes("\n")) {
+                                        val = val.replaceAll("\n", "</br>");
+                                    }
+                                    //console.log(val);
+                                    consoleOutput.innerHTML = "<div>" + val + "</div>";
+                                }
+                            })
+                            .catch(error => {
+                                hideLoading();
+                                if (error.name === 'AbortError') {
+                                    alert('The request has timed out. Please try again.');
+                                } else {
+                                    console.error('Error sending data to backend:', error);
+                                }
+                            });
+                    };
+                });
+                return;
+            } else {
+                var parts = githubRawUrl.split(',');
+                githubRawUrl = parts[0];
+                var timeout = 120;
+                if (parts.length > 1) {
+                    timeout = parseInt(parts[1], 10);
+                }
+                //console.log(timeout);
+              
+                window.addEventListener('beforeunload', function (event) {
+                    if (folderId) {
+                        fetch(`/Home/DeleteFolder/${folderId}`, { method: 'DELETE', keepalive: true });
+                    }
+                });
+                
+                // Fetch content from GitHub raw URL
+                fetch(githubRawUrl)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch GitHub raw content');
+                        }
+                        return response.text(); // Extract response body as text
+                    })
+                    .then(content => {
+                        // Load Monaco Editor
+                        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
+                        require(['vs/editor/editor.main'], function () {
+                            var editor = monaco.editor.create(document.getElementById('editor'), {
+                                value: content,
+                                language: 'csharp',// You may want to dynamically determine language based on file extension
+                                formatOnPaste: true,
+                                formatOnType: true,
+                                fontSize: 14,
+                                automaticLayout: true,
+                                minimap: {
+                                    enabled: false // Disable the minimap
+                                }
+                            });
+                            // Add event listener for changes
+                            editor.onDidChangeModelContent(function (event) {
+                                var value = editor.getValue();
+                                edit = true;
+                                // You can handle the changed content here (e.g., send it to the backend)
+                            });
+                            
+                            // Function to handle run button click
+                            window.runCode = function () {
+                                
+                                const startTime = performance.now();
+                                // Show loading symbol
+                                showLoading();
+                                //var compiler = document.getElementById('netdropdown').value;
+                                var code = editor.getValue();
+                                var controller = new AbortController();
+                                var timeoutId = setTimeout(function () {
+                                    controller.abort();
+                                }, timeout * 1000); // Set timeout to 60 seconds
+
+                                // Display the output in the terminal console
+                                var consoleOutput = document.getElementById('console-output');
+                                consoleOutput.innerHTML = "<div></div>";
+                                // Send the compiler and code to the backend for compilation or execution
+                                fetch('/Home/RunCode', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({ code: code, githubRawUrl: githubRawUrl, guidText: guidText}),
+                                    signal: controller.signal
+                                })
+                                    .then(response => {
+                                        clearTimeout(timeoutId);
+                                        if (!response.ok) {
+                                            throw new Error('Failed to send data to backend');
+                                        }
+                                        return response.json(); // Extract response body as text
+                                        // Handle success if needed
+                                    })
+                                    .then(data => {
+                                        // Hide loading symbol
+                                        hideLoading();
+                                        edit = false;
+                                        const endTime = performance.now();
+                                        const timeTaken = endTime - startTime;
+                                        alert(`Time taken: ${timeTaken.toFixed(2)} ms`);
+                                        console.log('Success:', data); // Log success response to console
+                                        if (data[0].output === "Completed") {
+                                            consoleOutput.innerHTML = "<p>You can download the resultant file from the link below,</p>";
+                                            for (var i = 0; i < data.length; i++) {
+                                                //console.log("Test " + data[i].output);
+                                                if (data[i].fileName === "") {
+                                                    var val = data[i].output;
+                                                    if (val.includes("\r\n")) {
+                                                        val = val.replaceAll("\r\n", "</br>");
+                                                    }
+                                                    if (val.includes("\n")) {
+                                                        val = val.replaceAll("\n", "</br>");
+                                                    }
+                                                    //console.log(val);
+                                                    consoleOutput.innerHTML = consoleOutput.innerHTML + "</br><div>" + val + "</div>";
+                                                } else {
+                                                    // Create an <a> tag
+                                                    var link = document.createElement('a');
+                                                    link.href = data[i].fileBase64; // Set the href attribute based on the response
+                                                    link.textContent = data[i].fileName; // Set the link text
+                                                    link.download = data[i].fileName;
+                                                    consoleOutput.appendChild(link);
+                                                    consoleOutput.innerHTML = consoleOutput.innerHTML + "</br>";
+                                                }
+                                            }
+
+                                        } else {
+                                            consoleOutput.innerHTML = "<div>" + data[0].output + "</div>";
+                                        }
+
+                                    })
+                                    .catch(error => {
+                                        hideLoading();
+                                        if (error.name === 'AbortError') {
+                                            alert('The request has timed out. Please try again.');
+                                        } else {
+                                            console.error('Error sending data to backend:', error);
+                                        }
+                                    });
+                            };
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error loading content from GitHub raw URL:', error);
+                    });
+            }
+        }
+    </script>
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.js"> </script>
+<style>
+    /* CSS to set font size for body content */
+    body {
+        font-size: 12px; /* Adjust font size as needed */
+        margin: 1px;
+    }
+
+    /* CSS for loading symbol container */
+    #loading {
+        display: none; /* Initially hidden */
+        position: absolute;
+        top: 38%;
+        left: 83%;
+        z-index: 9999;
+    }
+
+    /* CSS for circle spinner */
+    .spinner {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        border-left-color: blue;
+        animation: spin 1s linear infinite; /* Animation for spinning */
+    }
+
+    @@keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* CSS for the run button */
+    .run-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: green;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        border: 2px solid black;
+    }
+
+    /* Hover effect */
+    .run-button:hover {
+        background-color: green;
+    }
+
+    .editor-container {
+        width: 100%;
+    }
+
+    #editor {
+        font-size: 14px;
+        width: 70%;
+        float: left;
+        border: 1px solid #DCDCDB;
+        height: calc(100vh - 100px);
+    }
+
+    #console-output {
+        padding-left: 6px;
+        color: Black;
+        border: 1px solid #DCDCDB;
+        margin-left: 71%;
+        font-size: 14px;
+        background: White;
+        overflow-y: auto; /* Enable vertical scrollbar */
+        word-wrap: break-word; /* For older browsers */
+        overflow-wrap: break-word; /* For modern browsers */
+        height: calc(100vh - 100px);
+        font-family: Consolas, "Courier New", monospace;
+        font-weight: normal;
+        font-size: 14px;
+        font-feature-settings: "liga" 0, "calt" 0;
+        line-height: 19px;
+        letter-spacing: 0px;
+    }
+
+    .header-panel {
+        width: 100%;
+        background-color: #3734CF;
+        display: flex;
+        color: white;
+        height: 50px;
+        align-items: center;
+        justify-content: space-between;
+        font-family: 'Inter';
+        font-weight: 400;
+        font-style: normal;
+        line-height: 18px;
+    }
+
+    .run-code {
+        background-color: #3734CF;
+        display: flex;
+        border: none;
+        border-radius: 4px;
+        color: white;
+        margin: 4px 16px 4px 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    /* Hover effect */
+    .run-code:hover {
+        background-color: royalblue;
+        border-radius: 4px;
+    }
+
+    .note-item {
+        background-color: #f9f9f9;
+        border-left: 5px solid #007bff;
+        padding: 5px;
+        margin: 5px 5px;
+        border-radius: 5px;
+        position: relative;
+    }
+
+    .note-item .close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<body onload="initEditor('@postResult', '@postGuidResult')">
+    <div class="header-panel">
+        <div id="syncfusion-logo" style="display: flex;margin-left: 10px;">
+            <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 18H6.00354V24H0V18Z" fill="#D9D9D9"></path>
+                <path d="M0 10.5H6.00354V16.5H0V10.5Z" fill="#D9D9D9"></path>
+                <path d="M0 3H6.00354V9H0V3Z" fill="#D9D9D9"></path>
+                <path d="M7.50442 18H13.508V24H7.50442V18Z" fill="#D9D9D9"></path>
+                <path d="M7.50442 10.5H13.508V16.5H7.50442V10.5Z" fill="#D9D9D9"></path>
+                <path d="M7.50442 3H13.508V9H7.50442V3Z" fill="#D9D9D9"></path>
+                <path d="M15.0088 18H21.0124V24H15.0088V18Z" fill="#D9D9D9"></path>
+                <path d="M15.0088 10.5H21.0124V16.5H15.0088V10.5Z" fill="#D9D9D9"></path>
+                <path d="M20.7549 0L25 4.24264L20.7549 8.48528L16.5097 4.24264L20.7549 0Z" fill="#D9D9D9"></path>
+            </svg>
+            <div class="syncfusion-banner" style="font-size: 18px;margin-left: 10px;margin-top: 5px;">
+                Playground for Syncfusion Document Processing Libraries
+            </div>
+        </div>
+        <div style="display: flex;">
+            <button type="button" data-title="Run" class="run-code" onclick="runCode()" style="">
+                <span class="run-code-icon" style="margin: 10px 5px 9px 12px;font-size: 14px;line-height: 16px">
+                    <svg width="14" height="14" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.95312 6L1.55469 10.1152V1.88477L7.95312 6ZM0.40625 0.832031V11.168V11.25L0.433594 11.332L0.460938 11.4004L0.488281 11.4688L0.529297 11.5234L0.583984 11.5781L0.638672 11.6328L0.707031 11.6738L0.775391 11.7012L0.84375 11.7285L0.912109 11.7422H0.994141H1.0625L1.14453 11.7148L1.21289 11.6875L1.29492 11.6465L9.33398 6.47852L9.38867 6.4375L9.44336 6.38281L9.48438 6.32812L9.52539 6.27344L9.55273 6.20508L9.58008 6.13672L9.59375 6.06836V6V5.93164L9.58008 5.86328L9.55273 5.79492L9.52539 5.72656L9.48438 5.67188L9.44336 5.61719L9.38867 5.5625L9.33398 5.52148L1.29492 0.353516L1.21289 0.3125L1.14453 0.285156L1.0625 0.257812H0.994141L0.884766 0.271484L0.775391 0.298828L0.679688 0.353516L0.583984 0.408203L0.515625 0.503906L0.460938 0.599609L0.419922 0.708984L0.40625 0.832031Z" fill="white"></path></svg>
+                </span>
+                <div class="run-code-text" style="margin: 10px 12px 7px 0px;line-height: 16px;">
+                    Run
+                </div>
+            </button>
+            
+        </div>
+    </div>
+
+
+    <div class="editor-container">
+        <!-- Monaco Editor -->
+        <div id="editor" class="box"></div>
+        <!-- Terminal Console -->
+        <div id="console-output" class="box"></div>
+    </div>
+    <div class="note-item">       
+        <p style="margin: 5px;">Note: This playground application uses the ASP.NET Core platform NuGet packages for Excel, PDF, PowerPoint, and Word Document Processing Libraries. Please use code syntax specific to C# cross-platform.</p>
+       
+    </div>
+    <div>
+        <!-- Loading symbol -->
+        <div id="loading" class="spinner"></div>
+    </div>
+</body>

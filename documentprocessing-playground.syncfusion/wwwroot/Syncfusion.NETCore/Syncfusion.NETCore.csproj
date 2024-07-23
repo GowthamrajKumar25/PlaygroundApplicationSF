@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+<PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="Syncfusion.DocIO.Net.Core" Version="*" />
+		<PackageReference Include="Syncfusion.DocIORenderer.Net.Core" Version="*" />
+		<PackageReference Include="Syncfusion.HtmlToPdfConverter.Net.Linux" Version="*" />
+		<PackageReference Include="Syncfusion.Pdf.Imaging.Net.Core" Version="*" />    
+		<PackageReference Include="Syncfusion.Pdf.Net.Core" Version="*" />    
+		<PackageReference Include="Syncfusion.Presentation.Net.Core" Version="*" />    
+		<PackageReference Include="Syncfusion.PresentationRenderer.Net.Core" Version="*" />    
+		<PackageReference Include="Syncfusion.XlsIO.Net.Core" Version="*" />    
+		<PackageReference Include="Syncfusion.XlsIORenderer.Net.Core" Version="*" />  
+		<PackageReference Include="Skiasharp.NativeAssets.Linux" Version="*" />  
+	</ItemGroup>
+</Project>
