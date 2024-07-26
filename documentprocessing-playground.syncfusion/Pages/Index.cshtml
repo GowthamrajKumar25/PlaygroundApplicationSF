@@ -62,7 +62,7 @@
                         edit = true;
                         
                     });
-
+                   
                     // Function to handle run button click
                     window.runCode = function () {
                         const startTime = performance.now();
@@ -157,13 +157,13 @@
                 if (parts.length > 1) {
                     timeout = parseInt(parts[1], 10);
                 }
-                //console.log(timeout);
-              
-                window.addEventListener('beforeunload', function (event) {
+                
+                var folderId = guidText; // Replace with actual GUID
+                window.onbeforeunload = function () {
                     if (folderId) {
                         fetch(`/Home/DeleteFolder/${folderId}`, { method: 'DELETE', keepalive: true });
                     }
-                });
+                };
                 
                 // Fetch content from GitHub raw URL
                 fetch(githubRawUrl)
@@ -192,6 +192,7 @@
                             editor.onDidChangeModelContent(function (event) {
                                 var value = editor.getValue();
                                 edit = true;
+                                
                                 // You can handle the changed content here (e.g., send it to the backend)
                             });
                             
