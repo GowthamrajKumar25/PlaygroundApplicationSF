@@ -30,7 +30,7 @@ namespace documentprocessing_playground.syncfusion.Pages
             DPLHelper.SFCompileAndRun(code, "");
             
             _timer?.Dispose();
-            _timer = new Timer(DeleteFolderCallback, Path.GetFullPath(value), TimeSpan.FromSeconds(20), Timeout.InfiniteTimeSpan);
+            _timer = new Timer(DeleteFolderCallback, Path.GetFullPath(value), TimeSpan.FromSeconds(3600), Timeout.InfiniteTimeSpan);
 
         }
         private void DeleteFolderCallback(object state)

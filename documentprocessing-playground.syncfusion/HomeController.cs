@@ -23,21 +23,7 @@ namespace documentprocessing_playground.syncfusion
             var result = await ExecuteCode(dto.Code, dto.GithubRawUrl, dto.GuidText);
             return Ok(result);
         }
-        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
-        [HttpDelete]
-        [Route("Home/DeleteFolder/{guid}")]
-        public IActionResult DeleteFolder(string guid)
-        {
-            Console.WriteLine("Delete a folder " + guid);
-            string folderPath = Path.GetFullPath(guid);
-            if (Directory.Exists(folderPath))
-            {
-                Directory.Delete(folderPath, true);
-                return Ok("Folder deleted.");
-            }
-            return NotFound("Folder not found.");
-        }
-
+       
         private async Task<List<RunCodeResult>> ExecuteCode(string code, string link, string guidPath)
         {
             string output = "";
@@ -101,7 +87,7 @@ namespace documentprocessing_playground.syncfusion
 
                 }
                 _timer?.Dispose();
-                _timer = new Timer(DeleteFolderCallback, projectPath, TimeSpan.FromSeconds(60), Timeout.InfiniteTimeSpan);
+                _timer = new Timer(DeleteFolderCallback, projectPath, TimeSpan.FromSeconds(3600), Timeout.InfiniteTimeSpan);
 
                 output = DPLHelper.SFCompileAndRun(RemovePath(code, guidPath), projectPath);
 
