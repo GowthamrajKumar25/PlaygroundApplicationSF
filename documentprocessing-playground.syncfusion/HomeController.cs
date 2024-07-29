@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using System.Text;
 
-
 namespace documentprocessing_playground.syncfusion
 {
     public class HomeController : Controller
@@ -10,7 +9,7 @@ namespace documentprocessing_playground.syncfusion
         List<RunCodeResult> resultCol = new List<RunCodeResult>();
         
         private static Timer _timer;
-
+        
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         // GET: HomeController
         public IActionResult Index()
@@ -18,14 +17,12 @@ namespace documentprocessing_playground.syncfusion
 
             return View();
         }
-
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [HttpPost]
         public async Task<IActionResult> RunCode([FromBody] CodeEditorValue dto)
         {
             
             var result = await ExecuteCode(dto.Code, dto.GithubRawUrl, dto.GuidText);
-
             return Ok(result);
         }
 
@@ -33,6 +30,7 @@ namespace documentprocessing_playground.syncfusion
         [Route("Home/DeleteFolder/{id}")]
         public IActionResult DeleteFolder(string id)
         {
+
             string folderPath = Path.GetFullPath(id);
             if (Directory.Exists(folderPath))
             {
@@ -81,6 +79,7 @@ namespace documentprocessing_playground.syncfusion
                     if (!Directory.Exists(projectPath))
                     {
                         Directory.CreateDirectory(projectPath);
+                        
                         DPLHelper.CloneRepository(link, guidPath, Request);
                         Thread.Sleep(1000);
                         

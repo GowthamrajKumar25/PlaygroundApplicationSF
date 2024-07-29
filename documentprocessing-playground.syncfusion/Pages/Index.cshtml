@@ -89,7 +89,7 @@
                             .then(response => {
                                 clearTimeout(timeoutId);
                                 if (!response.ok) {
-                                    throw new Error('Failed to send data to backend');
+                                    throw new Error('Failed to send data to backend' , response);
                                 }
                                 return response.json(); // Extract response body as text
                                 // Handle success if needed
@@ -224,7 +224,7 @@
                                     .then(response => {
                                         clearTimeout(timeoutId);
                                         if (!response.ok) {
-                                            throw new Error('Failed to send data to backend');
+                                            throw new Error('Failed to send data to backend ', response);
                                         }
                                         return response.json(); // Extract response body as text
                                         // Handle success if needed
