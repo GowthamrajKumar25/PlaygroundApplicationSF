@@ -13,15 +13,6 @@ namespace documentprocessing_playground.syncfusion.Pages
             var value = Guid.NewGuid().ToString();
             ViewData["PostGuidResult"] = value;
             Url = null;
-            using var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("documentprocessing-playground.syncfusion/1.0");
-
-            // Optionally, add authentication for higher limits
-            var response = await httpClient.GetAsync("https://api.github.com/rate_limit");
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(content);
             string code = "using System;\r\nnamespace HelloWorld\r\n{\r\n   public class Program\r\n   {\r\n       public static void Main()\r\n       {\r\n            Console.WriteLine(\"Hello, World!\");\r\n       }\r\n   }\r\n}";
             DPLHelper.SFCompileAndRun(code, "");
         }

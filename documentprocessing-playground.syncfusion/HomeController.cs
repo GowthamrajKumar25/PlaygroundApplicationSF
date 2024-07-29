@@ -26,11 +26,11 @@ namespace documentprocessing_playground.syncfusion
         }
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [HttpDelete]
-        [Route("Home/DeleteFolder/{id}")]
-        public IActionResult DeleteFolder(string id)
+        [Route("Home/DeleteFolder/{guid}")]
+        public IActionResult DeleteFolder(string guid)
         {
-
-            string folderPath = Path.GetFullPath(id);
+            Console.WriteLine("Delete a folder " + guid);
+            string folderPath = Path.GetFullPath(guid);
             if (Directory.Exists(folderPath))
             {
                 Directory.Delete(folderPath, true);
