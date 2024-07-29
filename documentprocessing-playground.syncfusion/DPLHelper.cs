@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http.Headers;
 
 namespace documentprocessing_playground.syncfusion
 {
@@ -59,8 +60,8 @@ namespace documentprocessing_playground.syncfusion
             var user = request.Headers["User-Agent"].ToString();
             var apiUrl = GetGitHubApiUrl(repoUrl, directoryPath);
             using var httpClient = new HttpClient();
+            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(user);
-
             var extractPath = Path.Combine(Directory.GetCurrentDirectory(), value);
 
             if (Directory.Exists(extractPath))
@@ -76,6 +77,11 @@ namespace documentprocessing_playground.syncfusion
         private static async Task DownloadDirectoryContentsAsync(HttpClient httpClient, string apiUrl, string extractPath)
         {
             var response = await httpClient.GetAsync(apiUrl);
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Error: {response.StatusCode}");
+                return;
+            }
             response.EnsureSuccessStatusCode();
 
             var contents = await response.Content.ReadAsStringAsync();
@@ -122,8 +128,13 @@ namespace documentprocessing_playground.syncfusion
         private static async Task DownloadFileAsync(HttpClient httpClient, string fileUrl, string filePath)
         {
             var response = await httpClient.GetAsync(fileUrl);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                Console.WriteLine($"Failed to download file: {fileUrl}");
+                return;
+            }
             response.EnsureSuccessStatusCode();
-
             await using var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write);
             await response.Content.CopyToAsync(fs);
         }
