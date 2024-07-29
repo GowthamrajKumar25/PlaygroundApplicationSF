@@ -60,7 +60,7 @@ namespace documentprocessing_playground.syncfusion
             var user = request.Headers["User-Agent"].ToString();
             var apiUrl = GetGitHubApiUrl(repoUrl, directoryPath);
             using var httpClient = new HttpClient();
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(user);
             var extractPath = Path.Combine(Directory.GetCurrentDirectory(), value);
 
