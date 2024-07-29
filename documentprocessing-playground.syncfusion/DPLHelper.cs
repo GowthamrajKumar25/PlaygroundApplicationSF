@@ -361,6 +361,7 @@ namespace documentprocessing_playground.syncfusion
             }
             return syncfusionAssemblies;
         }
+
         private class GitHubContent
         {
             public string name { get; set; }

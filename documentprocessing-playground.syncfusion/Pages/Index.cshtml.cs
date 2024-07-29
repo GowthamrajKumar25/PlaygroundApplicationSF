@@ -9,7 +9,7 @@ namespace documentprocessing_playground.syncfusion.Pages
     {
         [BindProperty]
         public string Url { get; set; }
-        private static Timer _timer;
+        private Timer _timer;
         public async Task OnGet()
         {
             var value = Guid.NewGuid().ToString();

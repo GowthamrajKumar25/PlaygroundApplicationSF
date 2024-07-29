@@ -8,7 +8,8 @@ namespace documentprocessing_playground.syncfusion
     {
         List<RunCodeResult> resultCol = new List<RunCodeResult>();
         
-        private static Timer _timer;
+        private Timer _timer;
+
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         // GET: HomeController
         public IActionResult Index()
@@ -189,6 +190,7 @@ namespace documentprocessing_playground.syncfusion
             }
             return resultCol;
         }
+      
         private void ReadFilesFromFolder(string folderPath)
         {
             // Get all file paths from the specified directory

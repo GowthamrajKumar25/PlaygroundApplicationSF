@@ -7,7 +7,7 @@
 }
 @section Scripts {
     <script>
-        let guid;
+    
         // Function to show loading symbol
         function showLoading() {
             $('#loading').show();
@@ -20,33 +20,12 @@
         $(document).on('click', '.close', function () {
             $(this).parent('.note-item').remove();
         });
-        // document.addEventListener('visibilitychange', function () {
-        //     if (document.visibilityState === 'hidden') {
-        //         deleteGuidFolder();
-        //     }
-        // });
-        
-        function deleteGuidFolder() {
-           
-            if (guid) {
-                fetch(`/Home/DeleteFolder/${guid}`, {
-                    method: 'DELETE'
-                })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log('Folder deleted with GUID:', guid);
-                        }
-                    })
-                    .catch(error => console.error('Error deleting folder:', error));
-            }
-        }
+       
         // Function to fetch content from GitHub raw URL and load into Monaco Editor
         function initEditor(data, guidText) {
             var githubRawUrl = data;
             var edit = false;
-            guid = guidText;
-            //console.log("initEditor called with data:", data);
-            //console.log("initEditor called with data:", guidText);
+           
             if (!githubRawUrl) {
                 require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
                 require(['vs/editor/editor.main'], function () {
@@ -434,7 +413,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<body onload="initEditor('@postResult', '@postGuidResult')" onbeforeunload="deleteGuidFolder()">
+<body onload="initEditor('@postResult', '@postGuidResult')">
     <div class="header-panel">
         <div id="syncfusion-logo" style="display: flex;margin-left: 10px;">
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
