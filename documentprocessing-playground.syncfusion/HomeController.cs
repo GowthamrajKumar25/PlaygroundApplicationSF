@@ -24,7 +24,7 @@ namespace documentprocessing_playground.syncfusion
             var result = await ExecuteCode(dto.Code, dto.GithubRawUrl, dto.GuidText);
             return Ok(result);
         }
-
+        [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         [HttpDelete]
         [Route("Home/DeleteFolder/{id}")]
         public IActionResult DeleteFolder(string id)

@@ -20,7 +20,14 @@
             $(this).parent('.note-item').remove();
         });
 
-
+        function deleteGuidFolder(guidText) {
+            const folderId = guidText;
+            console.log("Testing  "+ folderId);
+            if (folderId) {
+                fetch(`/Home/DeleteFolder/${folderId}`, { method: 'DELETE', keepalive: true });
+            }
+            
+        }
         // Function to fetch content from GitHub raw URL and load into Monaco Editor
         function initEditor(data, guidText) {
             var githubRawUrl = data;
@@ -159,11 +166,7 @@
                 }
                 
                 var folderId = guidText; // Replace with actual GUID
-                window.onbeforeunload = function () {
-                    if (folderId) {
-                        fetch(`/Home/DeleteFolder/${folderId}`, { method: 'DELETE', keepalive: true });
-                    }
-                };
+             
                 
                 // Fetch content from GitHub raw URL
                 fetch(githubRawUrl)
@@ -418,7 +421,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<body onload="initEditor('@postResult', '@postGuidResult')">
+<body onload="initEditor('@postResult', '@postGuidResult')" onbeforeunload="deleteGuidFolder('@postGuidResult')">
     <div class="header-panel">
         <div id="syncfusion-logo" style="display: flex;margin-left: 10px;">
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
