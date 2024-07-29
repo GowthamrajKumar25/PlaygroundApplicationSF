@@ -19,7 +19,6 @@ namespace documentprocessing_playground.syncfusion
         [HttpPost]
         public async Task<IActionResult> RunCode([FromBody] CodeEditorValue dto)
         {
-            
             var result = await ExecuteCode(dto.Code, dto.GithubRawUrl, dto.GuidText);
             return Ok(result);
         }

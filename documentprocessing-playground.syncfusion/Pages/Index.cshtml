@@ -20,11 +20,12 @@
         $(document).on('click', '.close', function () {
             $(this).parent('.note-item').remove();
         });
-        document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'hidden') {
-                deleteGuidFolder();
-            }
-        });
+        // document.addEventListener('visibilitychange', function () {
+        //     if (document.visibilityState === 'hidden') {
+        //         deleteGuidFolder();
+        //     }
+        // });
+        
         function deleteGuidFolder() {
            
             if (guid) {
@@ -433,7 +434,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/editor/editor.main.min.css" />
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<body onload="initEditor('@postResult', '@postGuidResult')">
+<body onload="initEditor('@postResult', '@postGuidResult')" onbeforeunload="deleteGuidFolder()">
     <div class="header-panel">
         <div id="syncfusion-logo" style="display: flex;margin-left: 10px;">
             <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
