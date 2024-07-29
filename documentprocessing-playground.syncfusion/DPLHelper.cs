@@ -62,12 +62,7 @@ namespace documentprocessing_playground.syncfusion
             using var httpClient = new HttpClient();
 
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(user);
-            // Convert Base64 string to byte array
-            byte[] bytes = Convert.FromBase64String("Z2hwX25uUU5DZE9DNFRNWDJKamhsUGljRGRKZHE1RzB3azQ5RDEyNQ==");
-
-            // Convert byte array to original string
-            string originalString = Encoding.UTF8.GetString(bytes);
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", originalString);
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "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");
             
            
             var extractPath = Path.Combine(Directory.GetCurrentDirectory(), value);
