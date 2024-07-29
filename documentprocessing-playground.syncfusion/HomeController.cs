@@ -9,7 +9,6 @@ namespace documentprocessing_playground.syncfusion
         List<RunCodeResult> resultCol = new List<RunCodeResult>();
         
         private static Timer _timer;
-        
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
         // GET: HomeController
         public IActionResult Index()

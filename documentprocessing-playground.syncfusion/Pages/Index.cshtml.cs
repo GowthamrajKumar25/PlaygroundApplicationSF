@@ -8,7 +8,6 @@ namespace documentprocessing_playground.syncfusion.Pages
     {
         [BindProperty]
         public string Url { get; set; }
-
         public async Task OnGet()
         {
             var value = Guid.NewGuid().ToString();
