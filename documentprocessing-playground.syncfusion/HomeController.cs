@@ -13,7 +13,6 @@ namespace documentprocessing_playground.syncfusion
         // GET: HomeController
         public IActionResult Index()
         {
-
             return View();
         }
         [Microsoft.AspNetCore.Cors.EnableCors("MyPolicy")]
@@ -102,7 +101,7 @@ namespace documentprocessing_playground.syncfusion
 
                 }
                 _timer?.Dispose();
-                _timer = new Timer(DeleteFolderCallback, projectPath, TimeSpan.FromSeconds(3600), Timeout.InfiniteTimeSpan);
+                _timer = new Timer(DeleteFolderCallback, projectPath, TimeSpan.FromSeconds(60), Timeout.InfiniteTimeSpan);
 
                 output = DPLHelper.SFCompileAndRun(RemovePath(code, guidPath), projectPath);
 

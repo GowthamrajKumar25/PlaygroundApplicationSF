@@ -20,8 +20,10 @@
         $(document).on('click', '.close', function () {
             $(this).parent('.note-item').remove();
         });
-        window.addEventListener('beforeunload', function (event) {
-            deleteGuidFolder();
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') {
+                deleteGuidFolder();
+            }
         });
         function deleteGuidFolder() {
            
