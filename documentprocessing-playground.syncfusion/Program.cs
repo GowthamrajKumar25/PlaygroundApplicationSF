@@ -13,7 +13,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("MyPolicy", builder =>
     {
-        builder.WithOrigins("http://localhost:8080", "https://documentprocessing-playground.syncfusion.com", "https://dev-documentprocessing-playground.syncfusion.com")
+        builder.WithOrigins("http://localhost:8080", "https://documentprocessing-playground.syncfusion.com", "https://help.syncfusion.com/")
                .AllowAnyHeader()
                .AllowAnyMethod();
     });

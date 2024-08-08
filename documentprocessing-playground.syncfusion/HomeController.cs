@@ -30,6 +30,7 @@ namespace documentprocessing_playground.syncfusion
             List<string> fileBase64 = new List<string>();
             List<string> fileName = new List<string>();
             Dictionary<string, string> fileNameCol = new Dictionary<string, string>();
+
             if (!code.Contains("using Syncfusion"))
             {
                 output = DPLHelper.SFCompileAndRun(code, "");
@@ -91,7 +92,7 @@ namespace documentprocessing_playground.syncfusion
 
                 output = DPLHelper.SFCompileAndRun(RemovePath(code, guidPath), projectPath);
 
-                if (!output.Contains("Compilation Failed"))
+                if (!output.Contains("Compilation Failed") && !output.Contains("error"))
                 {
                     if (!string.IsNullOrEmpty(link))
                     {
@@ -165,6 +166,10 @@ namespace documentprocessing_playground.syncfusion
                 }
                 else
                 {
+                    if (output.Contains("Could not find a part of the path"))
+                    {
+                        output = "* You must save the documents inside the \"Output\" folder. Otherwise, you can't download the saved documents.\r\n " + output;
+                    }
                     var resultVal = new RunCodeResult
                     {
                         Output = output,
@@ -176,7 +181,6 @@ namespace documentprocessing_playground.syncfusion
             }
             return resultCol;
         }
-      
         private void ReadFilesFromFolder(string folderPath)
         {
             // Get all file paths from the specified directory
@@ -272,11 +276,9 @@ namespace documentprocessing_playground.syncfusion
             {
                 var replacements = new Dictionary<string, string>
                 {
-                    { "../../../", $"{path}/" },
-                    { "../../", $"{path}/" },
-                    { "../", $"{path}/" },
-                    { "\"Output/", $"\"{path}/Output/" },
-                    { "@\"Output/", $"@\"{path}/Output/" }
+                    {"Path.GetFullPath(@\"",$"Path.GetFullPath(@\"{path}/"},
+                    {"Path.GetFullPath(\"",$"Path.GetFullPath(\"{path}/"}
+
                 };
 
                 foreach (var replacement in replacements)

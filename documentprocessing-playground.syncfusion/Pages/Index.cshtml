@@ -99,7 +99,7 @@
                                 edit = false;
                                 const endTime = performance.now();
                                 const timeTaken = endTime - startTime;
-                                alert(`Time taken: ${timeTaken.toFixed(2)} ms`);
+                                //alert(`Time taken: ${timeTaken.toFixed(2)} ms`);
                                 console.log('Success:', data); // Log success response to console
 
                                 if (data[0].output === "Completed") {
@@ -230,7 +230,7 @@
                                         edit = false;
                                         const endTime = performance.now();
                                         const timeTaken = endTime - startTime;
-                                        alert(`Time taken: ${timeTaken.toFixed(2)} ms`);
+                                        //alert(`Time taken: ${timeTaken.toFixed(2)} ms`);
                                         console.log('Success:', data); // Log success response to console
                                         if (data[0].output === "Completed") {
                                             consoleOutput.innerHTML = "<p>You can download the resultant file from the link below,</p>";
@@ -258,7 +258,14 @@
                                             }
 
                                         } else {
-                                            consoleOutput.innerHTML = "<div>" + data[0].output + "</div>";
+                                            var val = data[0].output;
+                                            if (val.includes("\r\n")) {
+                                                val = val.replaceAll("\r\n", "</br></br>");
+                                            }
+                                            if (val.includes("\n")) {
+                                                val = val.replaceAll("\n", "</br></br>");
+                                            }
+                                            consoleOutput.innerHTML = "<div>" + val + "</div>";
                                         }
 
                                     })

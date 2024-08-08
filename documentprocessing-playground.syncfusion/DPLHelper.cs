@@ -16,10 +16,11 @@ namespace documentprocessing_playground.syncfusion
     internal class DPLHelper
     {
         internal static void CloneRepository(string formatUrl, string value, HttpRequest req)
-        {            
-            string url = formatUrl.Replace("%20", " ");
-            if (url != null)
+        {   
+            if (formatUrl != null)
             {
+                string url = formatUrl.Replace("%20", " ");
+
                 if (url.Contains(".NET") || url.Contains(".NET-Standard") || url.Contains("NET Standard"))
                 {
                     string[] parts = url.Split(',');
@@ -289,7 +290,7 @@ namespace documentprocessing_playground.syncfusion
             catch (Exception ex)
             {
                 Console.SetOut(originalConsoleOut);
-                return $"An error occurred: {ex.Message}";
+                return $"An error occurred: {ex.InnerException.Message}";
             }
         }
         private static string AllClassCodes(string projectPath, string code)
